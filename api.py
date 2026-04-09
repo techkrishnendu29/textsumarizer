@@ -65,7 +65,7 @@ def health_check():
 def index():
     """Root endpoint with API documentation."""
     return jsonify({
-        "name": "Text Summarizer API",
+        "name": "Text Summarizer API Krishnendu Ghosh",
         "version": "1.0.0",
         "endpoints": {
             "POST /api/summarize": "Summarize text",
