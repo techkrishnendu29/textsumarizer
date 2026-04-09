@@ -1,10 +1,21 @@
+import os
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from summarizer import Summarizer, SummaryStyle
 
 app = Flask(__name__)
 
+# Enable CORS for all routes
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["*"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
-@app.route('/api/summarize', methods=['POST'])
+
+@app.route('/api/summarize', methods=['POST', 'OPTIONS'])
 def summarize_text():
     """
     POST endpoint to summarize text.
@@ -15,6 +26,9 @@ def summarize_text():
       "style": "brief"  # optional: brief, bullet, detailed, keywords
     }
     """
+    if request.method == 'OPTIONS':
+        return '', 204
+    
     try:
         data = request.get_json()
         
@@ -23,6 +37,10 @@ def summarize_text():
         
         text = data.get('text', '').strip()
         style_name = data.get('style', 'brief').lower()
+        
+        # Validate text
+        if len(text) < 10:
+            return jsonify({"error": "Text must be at least 10 characters long"}), 400
         
         # Validate style
         valid_styles = [s.value for s in SummaryStyle]
@@ -55,28 +73,37 @@ def summarize_text():
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 
-@app.route('/api/health', methods=['GET'])
+@app.route('/api/health', methods=['GET', 'OPTIONS'])
 def health_check():
     """Health check endpoint."""
-    return jsonify({"status": "ok", "service": "summarizer"}), 200
+    if request.method == 'OPTIONS':
+        return '', 204
+    
+    return jsonify({
+        "status": "ok", 
+        "service": "summarizer",
+        "version": "1.0.0"
+    }), 200
 
 
 @app.route('/', methods=['GET'])
 def index():
     """Root endpoint with API documentation."""
     return jsonify({
-        "name": "Text Summarizer API Krishnendu Ghosh",
+        "name": "Text Summarizer API",
         "version": "1.0.0",
         "endpoints": {
             "POST /api/summarize": "Summarize text",
-            "GET /api/health": "Health check"
+            "GET /api/health": "Health check",
+            "GET /": "API documentation"
         },
         "example": {
             "endpoint": "POST /api/summarize",
             "body": {
                 "text": "Your long text here...",
                 "style": "brief"
-            }
+            },
+            "styles": ["brief", "bullet", "detailed", "keywords"]
         }
     }), 200
 
