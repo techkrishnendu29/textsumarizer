@@ -6,13 +6,7 @@ from summarizer import Summarizer, SummaryStyle
 app = Flask(__name__)
 
 # Enable CORS for all routes
-CORS(app, resources={
-    r"/api/*": {
-        "origins": ["*"],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
-    }
-})
+CORS(app)
 
 
 @app.route('/api/summarize', methods=['POST', 'OPTIONS'])
