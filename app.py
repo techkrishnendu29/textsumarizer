@@ -1,25 +1,26 @@
 import os
 from flask import Flask, request, jsonify
+
 from summarizer import Summarizer, SummaryStyle
 
 app = Flask(__name__)
 
-# ✅ MANUAL CORS HANDLING (guaranteed)
+# ✅ FORCE CORS HEADERS ON EVERY RESPONSE
 @app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     return response
 
 
-# ✅ Handle preflight globally
-@app.route('/api/<path:path>', methods=['OPTIONS'])
-def handle_options(path):
+# ✅ HANDLE PREFLIGHT (CRITICAL)
+@app.route('/api/summarize', methods=['OPTIONS'])
+def options_summarize():
     return '', 200
 
 
-# ✅ Summarize API
+# ✅ MAIN API
 @app.route('/api/summarize', methods=['POST'])
 def summarize_text():
     try:
@@ -46,32 +47,25 @@ def summarize_text():
 
         return jsonify({
             "success": True,
-            "summary": result.summary,
-            "style": result.style.value,
-            "input_word_count": result.input_word_count,
-            "output_word_count": result.output_word_count,
-            "sentence_count_in": result.sentence_count_in,
-            "sentence_count_out": result.sentence_count_out,
-            "top_keywords": result.top_keywords,
-            "elapsed_seconds": result.elapsed_seconds,
+            "summary": result.summary
         }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-# ✅ Health
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    return jsonify({"status": "ok"}), 200
+# ✅ HEALTH
+@app.route('/api/health', methods=['GET', 'OPTIONS'])
+def health():
+    return jsonify({"status": "ok"})
 
 
-# ✅ Root
+# ✅ ROOT
 @app.route('/')
-def index():
-    return jsonify({"message": "API running"}), 200
+def home():
+    return "API running"
 
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
