@@ -1,4 +1,3 @@
-
 import math
 from collections import defaultdict
 from preprocessor import meaningful_tokens, split_sentences, tokenize
@@ -129,7 +128,7 @@ def extract_keywords(text: str, top_n: int = 8) -> list[str]:
     scorer = TFIDFScorer(sentences)
     idf = scorer._idf
 
-    from summarizer.preprocessor import word_frequencies
+    from preprocessor import word_frequencies
     tokens = meaningful_tokens(text)
     tf = word_frequencies(tokens)
 
