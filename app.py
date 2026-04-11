@@ -42,7 +42,7 @@ def health():
 
 @app.route('/')
 def home():
-    return "API running", 200
+    return "API running Developed by Krishnendu Ghosh , Contact @ www.krishnendughosh.in" 200
 
 
 if __name__ == "__main__":
