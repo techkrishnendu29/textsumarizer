@@ -42,7 +42,13 @@ def health():
 
 @app.route('/')
 def home():
-    return "API running Developed by Krishnendu Ghosh , Contact @ www.krishnendughosh.in" 200
+    return jsonify({
+        "app": "TextSage AI",
+        "status": "running",
+        "message": "Understand more, read less",
+        "developer": "Krishnendu Ghosh",
+        "contact": "https://www.krishnendughosh.in"
+    }), 200
 
 
 if __name__ == "__main__":
