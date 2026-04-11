@@ -43,9 +43,9 @@ def health():
 @app.route('/')
 def home():
     return jsonify({
-        "app": "TextSage AI",
+        "app": "Text Summariation API",
         "status": "running",
-        "message": "Understand more, read less",
+        "message": "Contact Developer for any Help Feel Free to use the API Not Source",
         "developer": "Krishnendu Ghosh",
         "contact": "https://www.krishnendughosh.in"
     }), 200
